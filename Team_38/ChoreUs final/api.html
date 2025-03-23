@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meal Recommendation</title>
+  <style>
+    .pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #e3f2fd;
+      margin: 0;
+      padding: 0;
+    }
+    #container {
+      width: 50%;
+      margin: 50px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      width: 60%;
+      border-radius: 5px;
+      border: 1px solid #90caf9;
+    }
+    button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
+    #ingredientsList {
+      text-align: left;
+      margin-top: 20px;
+      background: #bbdefb;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #ingredientsList p {
+      background: #64b5f6;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .remove-btn {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .meal {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px;
+      background: #bbdefb;
+      border-radius: 8px;
+      width: 150px;
+      vertical-align: top;
+    }
+    .meal img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    .heading-bar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2000;
+    }
+    .heading-bar a {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.5em;
+      color: #0077cc;
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+    .heading-bar a:hover {
+      animation: jiggle 0.5s;
+    }
+    @keyframes jiggle {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(3deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-3deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>Meal Recommendation</h2>
+    <p>Enter an ingredient:</p>
+    <input type="text" id="ingredient" placeholder="Ingredient (e.g., Tomato)">
+    <button onclick="addIngredient()">Add Ingredient</button>
+    <p style="color: #1976d2; font-style: italic;">For best results, keep only one ingredient.</p>
+    
+    <div id="ingredientsList"><strong>Added Ingredients:</strong></div>
+    
+    <button onclick="getMealSuggestion()">Suggest Meal</button>
+    
+    <div id="output"></div>
+  </div>
+  <div class="heading-bar">
+    <a href="dashboard.html">ChoreUs</a>
+  </div>
+  
+  <script>
+    let ingredientsArray = [];
+    
+    function addIngredient() {
+      const ingredientInput = document.getElementById("ingredient");
+      const ingredient = ingredientInput.value.trim();
+      if (!ingredient) {
+        alert("Please enter an ingredient!");
+        return;
+      }
+      ingredientsArray.push(ingredient);
+      displayIngredients();
+      ingredientInput.value = "";
+    }
+    
+    function displayIngredients() {
+      const ingredientsList = document.getElementById("ingredientsList");
+      ingredientsList.innerHTML = "<strong>Added Ingredients:</strong>";
+      ingredientsArray.forEach((item, index) => {
+        const listItem = document.createElement("p");
+        listItem.innerHTML = `${item} <button class="remove-btn" onclick="removeIngredient(${index})">Remove</button>`;
+        ingredientsList.appendChild(listItem);
+      });
+    }
+    
+    function removeIngredient(index) {
+      ingredientsArray.splice(index, 1);
+      displayIngredients();
+    }
+    
+    async function fetchMealsByIngredient(ingredient) {
+        const url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ingredient)}`;
+        try {
+        const response = await fetch(url);
+        return response.json();
+      } catch (error) {
+        console.error("Error fetching meals for", ingredient, error);
+        return null;
+      }
+    }
+    
+    async function getMealSuggestion() {
+      const outputDiv = document.getElementById("output");
+      
+      if (ingredientsArray.length === 0) {
+        alert("Please add at least one ingredient!");
+        return;
+      }
+      
+      outputDiv.innerHTML = "<p>Generating meal suggestions...</p>";
+      
+      const fetchPromises = ingredientsArray.map(ingredient => fetchMealsByIngredient(ingredient));
+      const results = await Promise.all(fetchPromises);
+      
+      const mealsMap = new Map();
+      results.forEach(result => {
+        if (result && result.meals) {
+          result.meals.forEach(meal => {
+            if (!mealsMap.has(meal.idMeal)) {
+              mealsMap.set(meal.idMeal, { ...meal, count: 1 });
+            } else {
+              mealsMap.get(meal.idMeal).count++;
+            }
+          });
+        }
+      });
+      
+      let filteredMeals = Array.from(mealsMap.values()).filter(meal => meal.count === ingredientsArray.length);
+      
+      if (filteredMeals.length === 0) {
+        outputDiv.innerHTML = "<p>No meals found that match all ingredients.</p>";
+        return;
+      }
+      
+      outputDiv.innerHTML = "<h3>Recommended Meals:</h3>";
+      filteredMeals.forEach(meal => {
+        outputDiv.innerHTML += `
+          <div class="meal">
+            <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+            <p>${meal.strMeal}</p>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>

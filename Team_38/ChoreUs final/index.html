@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>ChoreUs</title>
+  <!-- Google Fonts: Pacifico -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    .pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+    /* Basic reset and fonts */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { height: 100%; font-family: Arial, sans-serif; scroll-behavior: smooth; }
+
+    /* Fixed top navigation bar */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #007BFF;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    header .brand {
+      font-family: 'Pacifico', cursive;
+      font-size: 28px;
+    }
+    header nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 16px;
+    }
+    header nav a:hover { text-decoration: underline; }
+
+    /* Scroll container for marketing sections */
+    .scroll-container {
+      margin-top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+    }
+    section {
+      scroll-snap-align: start;
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      color: #fff;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    section.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Auth Modal styling */
+    #authModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    #authModal .modal-content {
+      background: #fff;
+      padding: 20px;
+      width: 300px;
+      position: relative;
+      border-radius: 4px;
+    }
+    #authModal .modal-content h3 { margin-bottom: 15px; }
+    #authModal .modal-content input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+    }
+    #authModal .modal-content button {
+      padding: 8px 12px;
+      margin-right: 10px;
+      border: none;
+      background: #007BFF;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    #authModal .modal-content .close {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .message { color: red; margin-top: 10px; font-size: 14px; }
+    .intro{
+        font-family: pacifico;
+    }
+    .image{
+      margin-top: 80px;
+      width: 1520px;
+      height: 90%;
+    }
+  </style>
+</head>
+<body>
+<!-- Top Navigation Bar -->
+<header>
+  <div class="brand">ChoreUs</div>
+  <nav>
+    <a href="#" onclick="openModal('signup')">Sign Up</a>
+    <a href="#" onclick="openModal('login')">Login</a>
+  </nav>
+</header>
+
+
+
+<!-- Hidden Modal for Sign Up / Login -->
+<div id="authModal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <!-- Signup Form -->
+    <div id="signupForm" style="display: none;">
+      <h3>Sign Up</h3>
+      <input type="text" id="signupUser" placeholder="User ID">
+      <input type="password" id="signupPass" placeholder="Password">
+      <button onclick="signup()">Submit</button>
+      <div id="signupMessage" class="message"></div>
+    </div>
+    <!-- Login Form -->
+    <div id="loginForm" style="display: none;">
+      <h3>Login</h3>
+      <input type="text" id="loginUser" placeholder="User ID">
+      <input type="password" id="loginPass" placeholder="Password">
+      <button onclick="login()">Submit</button>
+      <div id="loginMessage" class="message"></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // Utility function to get users from localStorage.
+  function getUsers() {
+    const users = localStorage.getItem('users');
+    return users ? JSON.parse(users) : {};
+  }
+  // Save users object back to localStorage.
+  function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  // Modal functions
+  function openModal(mode) {
+    document.getElementById('authModal').style.display = 'flex';
+    if(mode === 'signup') {
+      document.getElementById('signupForm').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+    } else if(mode === 'login') {
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('signupForm').style.display = 'none';
+    }
+  }
+  function closeModal() {
+    document.getElementById('authModal').style.display = 'none';
+    document.getElementById('signupMessage').innerText = '';
+    document.getElementById('loginMessage').innerText = '';
+  }
+
+  // Signup: save new user to the users object
+  function signup() {
+    const user = document.getElementById('signupUser').value.trim();
+    const pass = document.getElementById('signupPass').value;
+    if (!user || !pass) {
+      document.getElementById('signupMessage').innerText = "Please fill in all fields.";
+      return;
+    }
+    const users = getUsers();
+    if(users[user]) {
+      document.getElementById('signupMessage').innerText = "User already exists. Please log in.";
+      return;
+    }
+    // Create user object with a default dashboard setting.
+    users[user] = { password: pass, dashboard: "default", lastLogin: null };
+    saveUsers(users);
+    document.getElementById('signupMessage').innerText = "Signup successful. You can now log in.";
+  }
+
+  // Login: verify credentials and store current user
+  function login() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const users = getUsers();
+    if(!users[user] || users[user].password !== pass) {
+      document.getElementById('loginMessage').innerText = "Incorrect login id or password.";
+      return;
+    }
+    // Update last login time
+    users[user].lastLogin = new Date().toISOString();
+    saveUsers(users);
+    localStorage.setItem('currentUser', user);
+    window.location.href = 'dashboard.html';
+  }
+
+  // Scroll snap effect: add "active" class to section in view.
+  const sections = document.querySelectorAll('section');
+  const container = document.getElementById('scrollContainer');
+  container.addEventListener('scroll', () => {
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if(rect.top >= 60 && rect.top < window.innerHeight/2) {
+        sec.classList.add('active');
+      } else {
+        sec.classList.remove('active');
+      }
+    });
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+    sections[0].classList.add('active');
+  });
+</script>
+<img class="image" src="authpic.jpg">
+</body>
+</html>

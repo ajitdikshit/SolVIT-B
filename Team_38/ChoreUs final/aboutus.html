@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>ChoreUs Menu</title>
+    <style>
+          body {
+             padding: 0;
+             color: #333;
+             line-height: 1.6;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+    /* Header */
+    header {
+      background: #0077cc;
+      color: #fff;
+      padding: 20px 30px;
+      text-align: center;
+     
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+    header p {
+      margin: 5px 0 0;
+      font-size: 1.2em;
+    }
+    /* Hero Section */
+    .hero {
+      background: url('hero-image.jpg') no-repeat center center/cover;
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 119, 204, 0.6);
+    }
+    .hero .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 20px;
+    }
+    .hero h2 {
+      font-size: 3.5em;
+      margin: 0;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    .hero p {
+      font-size: 1.5em;
+      margin-top: 20px;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    }
+    /* Content Section */
+    .content {
+      padding: 40px 20px;
+      text-align: center;
+      background: #ffffff;
+      
+    }
+    .content h2 {
+      font-size: 2.5em;
+      color: #0077cc;
+      margin-bottom: 20px;
+    }
+    .content p {
+      font-size: 1.2em;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #0077cc;
+      font-weight: 400;
+    }
+    /* Footer */
+    footer {
+      background: #0077cc;
+      color: #fff;
+      padding: 30px 20px;
+      text-align: center;
+     
+    }
+    footer h2 {
+      margin-top: 0;
+      font-size: 2em;
+    }
+    .contact p {
+      margin: 10px 0;
+      font-size: 1.1em;
+    }
+    .social-icons {
+      margin: 15px 0;
+    }
+    .social-icons a {
+      display: inline-block;
+      margin: 0 15px;
+      font-size: 1.5em;
+      transition: transform 0.3s;
+    }
+    .social-icons a:hover {
+      transform: scale(1.2);
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h2 {
+        font-size: 2.8em;
+      }
+      .hero p {
+        font-size: 1.2em;
+      }
+    }
+        .sidebar {
+            width: 240px;
+            background-color: #0056b3;
+            padding-top: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .logo {
+            font-size: 50px;
+           
+            color: white;
+            margin-bottom: 30px; /* Adjusted to match invpage.html */
+            transition: transform 0.3s ease;
+            text-align: center;
+            font-family: Pacifico;
+        }
+        .logo:hover {
+            transform: scale(1.1);
+        }
+        .sidebar a, .sidebar p {
+            display: block;
+            margin-bottom: 21.5px;
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+        }
+        .sidebar .dashtext,
+        .sidebar .activitytext,
+        .sidebar .inventorytext
+        .sidebar .mealstext{
+            font-weight:normal;
+        }
+        .sidebar .profilestext {
+            font-weight:bold;
+        }
+        .heading{
+         
+            font-family: Pacifico;
+        
+        }
+        .heading-bar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2000;
+    }
+    .heading-bar a {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.5em;
+      color: white ;
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+    .heading-bar a:hover {
+      animation: jiggle 0.5s;
+    }
+    @keyframes jiggle {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(3deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-3deg); }
+      100% { transform: rotate(0deg); }
+    }
+    </style>
+</head>
+<body>
+  
+    <header>
+        <h1 class="heading">ChoreUs</h1>
+        <p>Your Daily Household Companion</p>
+      </header>
+      
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <h2 class="heading">ChoreUs</h2>
+          <p>The <span class="heading">ChoreUs</span> App provides an all-in-one platform for households
+            looking to streamline their organization, maintain a healthy
+            lifestyle, and manage daily activities effectively. It simplifies
+            meal planning and grocery shopping while promoting an equal
+            distribution of household tasks, making it easier for every
+            family member to stay engaged and motivated in a
+            collaborative, enjoyable way</p>
+        </div>
+      </section>
+      
+      <!-- Content Section -->
+      <section class="content">
+        <h2>The <span class="heading">ChoreUs</span> Dev Team</h2>
+        <p>
+        Ajit Dikshit </p>
+        <p>
+        Devarya Sen
+        </p>
+        <p>
+            Mirza Deyan Ahmad Baig
+        </p>
+        <p>
+            Beauty Singh
+        </p>
+        <p>
+            Shreya Srivastava
+        </p>
+      </section>
+      
+      <!-- Footer / Contact Section -->
+      <footer>
+        <h2>Contact Us</h2>
+        <div class="contact">
+          <p>Follow us on social media and stay connected!</p>
+          <div class="social-icons">
+            <a href="https://www.instagram.com" target="_blank">Insta</a>
+            <a href="https://www.x.com" target="_blank">X</a>
+            <a href="https://www.whatsapp.com" target="_blank">WhatsApp</a>
+          </div>
+        </div>
+        <p>&copy; 2025 ChoreUs. All rights reserved.</p>
+      </footer>
+      <div class="heading-bar">
+        <a href="dashboard.html">ChoreUs</a>
+      </div>
+</body>
+</html>
+
+

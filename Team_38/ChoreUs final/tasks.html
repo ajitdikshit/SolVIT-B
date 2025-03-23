@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Chore Manager</title>
+  <style>
+    .pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+    /* Base Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f8fb; /* soft light blue background */
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+    h2, h3 {
+      color: #0077cc;
+      text-align: center;
+    }
+    .container {
+      width: 800px;
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .form-group input,
+    .form-group select {
+      padding: 12px 15px;
+      font-size: 18px;
+      border: 2px solid #0077cc;
+      border-radius: 8px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .form-group button {
+      padding: 12px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #0077cc;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .form-group button:hover {
+      background-color: #005fa3;
+    }
+    .task-list {
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #0077cc;
+      border-radius: 8px;
+      background: #f0faff;
+      min-height: 100px;
+    }
+    .task-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .task-list li {
+      padding: 8px;
+      font-size: 18px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task-list li:last-child {
+      border-bottom: none;
+    }
+    .leader-board {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0077cc;
+    }
+    /* Additional styling for due date label */
+    .due-date {
+      font-size: 16px;
+      color: #555;
+    }
+    .heading-bar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2000;
+    }
+    .heading-bar a {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.5em;
+      color: #0077cc;
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+    .heading-bar a:hover {
+      animation: jiggle 0.5s;
+    }
+    @keyframes jiggle {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(3deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-3deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+</head>
+<body>
+    <div class="heading-bar">
+        <a href="dashboard.html">ChoreUs</a>
+      </div>
+<!-- Family Manager Section -->
+<div class="container" id="managerSection">
+  <h2>Family Manager - Assign Chores</h2>
+  <div class="form-group">
+    <input type="text" id="mgrFamilyCode" placeholder="Enter Family Code" />
+    <input type="text" id="mgrTask" placeholder="Chore to Assign" />
+    <input type="date" id="mgrDueDate" title="Due Date (optional)" />
+    <button onclick="addManagerTask()">Add Chore</button>
+  </div>
+</div>
+
+<!-- Family Member Section -->
+<div class="container" id="memberSection">
+  <h2>Family Member - View My Chores</h2>
+  <div class="form-group">
+    <input type="text" id="empFamilyCode" placeholder="Enter Your Family Code" />
+    <button onclick="viewMemberTasks()">View My Chores</button>
+  </div>
+  <div class="leader-board" id="leaderBoard">Family Leader: N/A</div>
+  <div class="task-list" id="memberTasks">
+    <ul id="taskList"></ul>
+  </div>
+</div>
+
+<script>
+  // Add a chore for a family member (Family Manager)
+  function addManagerTask() {
+    const familyCode = document.getElementById("mgrFamilyCode").value.trim();
+    const task = document.getElementById("mgrTask").value.trim();
+    const dueDate = document.getElementById("mgrDueDate").value; // optional
+
+    if (!familyCode || !task) {
+      alert("Please enter both the Family Code and a Chore.");
+      return;
+    }
+
+    // Retrieve tasks from localStorage
+    const tasksData = JSON.parse(localStorage.getItem("familyTasks")) || {};
+    if (!tasksData[familyCode]) {
+      tasksData[familyCode] = [];
+    }
+    // Store task with optional due date
+    const taskEntry = dueDate ? `${task} (Due: ${dueDate})` : task;
+    tasksData[familyCode].push(taskEntry);
+    localStorage.setItem("familyTasks", JSON.stringify(tasksData));
+
+    document.getElementById("mgrTask").value = "";
+    document.getElementById("mgrDueDate").value = "";
+    alert("Chore added for Family Code: " + familyCode);
+    updateLeader();
+  }
+
+  // Update the Family Leader based on points
+  function updateLeader() {
+    const pointsData = JSON.parse(localStorage.getItem("familyPoints")) || {};
+    let leader = "N/A";
+    let maxPoints = 0;
+    for (const code in pointsData) {
+      if (pointsData[code] > maxPoints) {
+        maxPoints = pointsData[code];
+        leader = code;
+      }
+    }
+    document.getElementById("leaderBoard").innerText = "Family Leader: " + leader + " (" + maxPoints + " pts)";
+  }
+
+  // View chores for a family member (Family Member)
+  function viewMemberTasks() {
+    const familyCode = document.getElementById("empFamilyCode").value.trim();
+    if (!familyCode) {
+      alert("Please enter your Family Code.");
+      return;
+    }
+    const tasksData = JSON.parse(localStorage.getItem("familyTasks")) || {};
+    const tasks = tasksData[familyCode] || [];
+    const taskListEl = document.getElementById("taskList");
+    taskListEl.innerHTML = "";
+    if (tasks.length === 0) {
+      taskListEl.innerHTML = "<li>No chores assigned.</li>";
+    } else {
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span>${task}</span> <button onclick="completeTask('${familyCode}', ${index})">Mark as Done</button>`;
+        taskListEl.appendChild(li);
+      });
+    }
+    updateLeader();
+  }
+
+  // Mark a chore as complete: remove it and add 2 points to the Family Code
+  function completeTask(familyCode, taskIndex) {
+    const tasksData = JSON.parse(localStorage.getItem("familyTasks")) || {};
+    const familyTasks = tasksData[familyCode] || [];
+    if (taskIndex < 0 || taskIndex >= familyTasks.length) return;
+
+    // Remove the task from the family's task list
+    familyTasks.splice(taskIndex, 1);
+    tasksData[familyCode] = familyTasks;
+    localStorage.setItem("familyTasks", JSON.stringify(tasksData));
+
+    // Update family points
+    const pointsData = JSON.parse(localStorage.getItem("familyPoints")) || {};
+    pointsData[familyCode] = (pointsData[familyCode] || 0) + 2;
+    localStorage.setItem("familyPoints", JSON.stringify(pointsData));
+
+    // Refresh the task list view
+    viewMemberTasks();
+    updateLeader();
+  }
+
+  // Initialize the leader board on page load
+  updateLeader();
+</script>
+</body>
+</html>
